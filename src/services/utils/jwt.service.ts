@@ -1,4 +1,6 @@
+import messages from "../../constants/messages";
 import jwt, { JwtPayload, Secret, SignOptions } from "jsonwebtoken";
+import HttpException from "../../utils/HttpException";
 
 class JWTService {
     static sign(
@@ -9,13 +11,11 @@ class JWTService {
         return jwt.sign(payload, secretKey, options)
     }
 
-    static async verify(token: string, secret: string): Promise<any> {
-        try {
-            const decoded = await jwt.verify(token, secret);
-            return decoded;
-        } catch (error) {
-            throw new Error('invalid token')
-        }
+    static  verify(token: string, secret: string) {
+        
+            return jwt.verify(token, secret);
+         
+    
     }
 }
 export default JWTService;

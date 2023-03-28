@@ -63,6 +63,7 @@ class AuthService {
         if (!isValidPassword) {
             throw HttpException.badRequest(messages["invalidAuth"])
         }
+        
 
 
         return user;

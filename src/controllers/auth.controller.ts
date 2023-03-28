@@ -4,6 +4,8 @@ import AuthService from "../services/auth.service";
 import authService from "../services/auth.service";
 import JWTService from "../services/utils/jwt.service";
 import env from "../config/env"
+import HttpException from "../utils/HttpException";
+import messages from "../constants/messages";
 
 class AuthController {
     constructor() {
@@ -14,16 +16,32 @@ class AuthController {
      //get all user from the database
     async getAll(req: Request, res: Response, next: NextFunction) {
         const token = req.headers.authorization?.split(' ')[1];
-        JWTService.verify(token as string, env.JWT_SECRET_KEY as string)
+        // console.log(token, "im here");
+        if(!token){
+            return 0
+        }
+        
       
-        const user = await authService.getAllUsers();
+        const validToken =  JWTService.verify(token, env.JWT_SECRET_KEY!)
+        if(!validToken){
+            next(HttpException.badRequest(messages["invalidToken"]))
+        }
+        // console.log(validToken,"2nd here");
+        
+        
+            const user = await authService.getAllUsers();
         res.status(200).json({
             status: "success",
             data: 
-                user,
-            
+                user,    
         });
-    }
+        
+      
+        
+    
+        
+      }
+    
      // signup controller to create a new user which is used as middleware in the route
     async signup(req: Request, res: Response, next: NextFunction) {
         const data = req.body;
