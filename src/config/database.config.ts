@@ -3,6 +3,7 @@ import { DataSource } from "typeorm"
 import env from "./env";
 import {User} from "../entities/user.entity";
 import { Sujeet } from "../entities/sujeet.entity";
+import { UserRoles } from "../entities/userRoles.entity";
 
 
 // database configuration using typrorm
@@ -15,7 +16,7 @@ const AppDataSource = new DataSource({
     database: env.DATABASE_NAME,
     synchronize: true,
     logging: false,
-    entities: [User,Sujeet],
+    entities: [User,Sujeet, UserRoles],
     subscribers: [],
     migrations: [],
 

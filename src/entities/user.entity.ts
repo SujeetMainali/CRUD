@@ -1,5 +1,6 @@
-import { Column, Entity } from "typeorm";
+import { Column, Entity, OneToOne, JoinColumn, ManyToMany, OneToMany, ManyToOne} from "typeorm";
 import CommonEntity from "./common.entities";
+import {UserRoles} from "./userRoles.entity";
 
 @Entity()
 export class User extends CommonEntity {
@@ -29,6 +30,11 @@ export class User extends CommonEntity {
         name: "password",
     })
     password: string;
+    
+
+   @ManyToOne(()=>UserRoles, (userRoles)=>userRoles.users)
+   @JoinColumn({name:"user_role_id"})
+    roles: UserRoles
 
 }
 

@@ -13,6 +13,7 @@ class Env {
     static DATABASE_NAME = process.env.DATABASE_NAME;
     static JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
     static EXPIRATION_TIME = +process.env.EXPIRATION_TIME!;
+    static ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 }
 
 export default Env;

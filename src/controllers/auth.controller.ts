@@ -7,42 +7,41 @@ import env from "../config/env"
 import HttpException from "../utils/HttpException";
 import messages from "../constants/messages";
 
+
 class AuthController {
     constructor() {
         // this.signup = this.signup.bind(this);
-     }
+    }
 
-     
-     //get all user from the database
+
+    //get all user from the database
     async getAll(req: Request, res: Response, next: NextFunction) {
         const token = req.headers.authorization?.split(' ')[1];
         // console.log(token, "im here");
-        if(!token){
+        if (!token) {
             return 0
         }
-        
-      
-        const validToken =  JWTService.verify(token, env.JWT_SECRET_KEY!)
-        if(!validToken){
+
+
+        const validToken = JWTService.verify(token, env.JWT_SECRET_KEY!)
+        if (!validToken) {
             next(HttpException.badRequest(messages["invalidToken"]))
         }
         // console.log(validToken,"2nd here");
-        
-        
-            const user = await authService.getAllUsers();
+        const user = await authService.getAllUsers();
         res.status(200).json({
             status: "success",
-            data: 
-                user,    
+            data:
+                user,
         });
-        
-      
-        
-    
-        
-      }
-    
-     // signup controller to create a new user which is used as middleware in the route
+
+
+
+
+
+    }
+
+    // signup controller to create a new user which is used as middleware in the route
     async signup(req: Request, res: Response, next: NextFunction) {
         const data = req.body;
         try {
@@ -59,49 +58,49 @@ class AuthController {
         }
     }
 
-    async signin(req:Request,res:Response,next:NextFunction){
+    async signin(req: Request, res: Response, next: NextFunction) {
         const data = req.body;
         try {
             const user = await authService.signIn(data);
-            const token = JWTService.sign({payload: user.id}, env.JWT_SECRET_KEY!, {expiresIn: env.EXPIRATION_TIME})
+            const token = JWTService.sign({ payload: user.id }, env.JWT_SECRET_KEY!, { expiresIn: env.EXPIRATION_TIME })
             res.status(200).json({
-                status:"success",
-                token : token,
-                data:user,
-                message:"signin success"
+                status: "success",
+                token: token,
+                data: user,
+                message: "signin success"
             })
         } catch (error) {
             console.log(error);
         }
     }
 
-    async removeUser(req:Request,res:Response, next:NextFunction){
+    async removeUser(req: Request, res: Response, next: NextFunction) {
         const data = req.body;
-        try{
+        try {
             const user = await authService.removeUser(data);
             res.status(200).json({
-                status:"success",
-                message : `${user.email} deleted successfully`
+                status: "success",
+                message: `${user.email} deleted successfully`
             })
         }
-        catch(error){
+        catch (error) {
             console.log(error);
-            
+
         }
     }
 
-    async changePassword(req:Request,res:Response,next:NextFunction){
+    async changePassword(req: Request, res: Response, next: NextFunction) {
         const data = req.body;
         try {
             const user = await authService.updatePassword(data);
             res.status(200).json({
-                status:"success",
+                status: "success",
                 data: user,
-                message:"password changed successfully"
+                message: "password changed successfully"
             })
         } catch (error) {
             console.log(error);
-            
+
         }
     }
 }

@@ -6,13 +6,19 @@ import { ChangepasswordDTO, RemoveDTO, SignInDTO } from "../dtos/auth.dto";
 import { SignUpDTO } from "../dtos/auth.dto";
 import HttpException from "../utils/HttpException";
 import BcryptService from "./utils/bcrypt.service";
+import { UserRoles } from "../entities/userRoles.entity";
+import env from "../config/env";
+import roles from "../constants/roles";
 
 
 // import router from "../routes/index"
 
 
 class AuthService {
-    constructor(private userRepository = AppDataSource.getRepository(User)) { }
+    constructor(
+        private userRepository:any = AppDataSource.getRepository(User),
+        private userRole:any = AppDataSource.getRepository(UserRoles)
+    ) { }
 
     /**this service facilitates to create a user in the database taking userData of type SignUpDTO */
     async signUp(userData: SignUpDTO): Promise<User> {
@@ -33,13 +39,20 @@ class AuthService {
             email,
             password: hashedPassword
         }); //creating a user with firstname, middlename, lastname, email and password of hashed password
+
+        const userRole = new UserRoles()
+        userRole.role = email === env.ADMIN_EMAIL?.toLowerCase() ? roles.admin : roles.client;
+        userRole.users = [user]
+
+        await this.userRole.save(userRole)
+
         return await this.userRepository.save(user); //saving the created user in the database.
     }
 
     /** method to get all the users from the database */
     async getAllUsers() {
-        return await this.userRepository.find()
-
+        const role= await this.userRole.find({relations:["users"]})
+        return role
     }
 
 
@@ -63,13 +76,13 @@ class AuthService {
         if (!isValidPassword) {
             throw HttpException.badRequest(messages["invalidAuth"])
         }
-        
+
 
 
         return user;
     }
 
-    /**method to remove the specific provided user form the database */  
+    /**method to remove the specific provided user form the database */
     async removeUser(userData: RemoveDTO): Promise<User> {
         const { email, password } = userData;
         const user = await this.userRepository.findOne({
